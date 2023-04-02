@@ -8,6 +8,7 @@ let direction = "right";
 let food = { x: Math.floor(Math.random() * 25), y: Math.floor(Math.random() * 25) };
 let score = 0;
 let gameLoop;
+let speed = 100;
 
 // Draw initial game state
 draw();
@@ -70,6 +71,10 @@ function startGame() {
     if (head.x === food.x && head.y === food.y) {
       food = { x: Math.floor(Math.random() * 25), y: Math.floor(Math.random() * 25) };
       score++;
+      speed -= 2;
+      if (speed < 50) { // Set a minimum speed
+        speed = 50;
+      }
     } else {
       snake.pop();
     }
@@ -82,7 +87,7 @@ function startGame() {
 
     // Draw game state
     draw();
-  }, 100);
+  }, speed);
 }
 
 function reset() {
@@ -106,6 +111,57 @@ function draw() {
   ctx.fillStyle = "purple";
   for (const segment of snake) {
     ctx.fillRect(segment.x * 25, segment.y * 25, 25, 25);
+  }
+  for (let i = 0; i < snake.length; i++) {
+    let segment = snake[i];
+    let x = segment.x * 25;
+    let y = segment.y * 25;
+    let w = 25;
+    let h = 25;
+    ctx.fillStyle = "purple";
+    ctx.fillRect(x, y, w, h);
+    // Add eyes to head
+    if (i === 0) {
+      let eyeSize = w / 5;
+      let leftEyeX = x + eyeSize * 2;
+      let rightEyeX = x + w - eyeSize * 3;
+      let eyeY = y + eyeSize * 2;
+      ctx.fillStyle = "white";
+      ctx.beginPath();
+      ctx.arc(leftEyeX, eyeY, eyeSize, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(rightEyeX, eyeY, eyeSize, 0, Math.PI * 2);
+      ctx.fill();
+      // Add pupils
+      ctx.fillStyle = "black";
+      let pupilSize = eyeSize / 2;
+      let dx = 0;
+      let dy = 0;
+      switch (direction) {
+        case "up":
+          dy = -1;
+          break;
+        case "down":
+          dy = 1;
+          break;
+        case "left":
+          dx = -1;
+          break;
+        case "right":
+          dx = 1;
+          break;
+      }
+      ctx.beginPath();
+      ctx.arc(leftEyeX + dx * eyeSize / 2, eyeY + dy * eyeSize / 2, pupilSize, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(rightEyeX + dx * eyeSize / 2, eyeY + dy * eyeSize / 2, pupilSize, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "white";
+      ctx.font = "20px Times New Roman";
+      ctx.fillText(`Score: ${score}`, canvas.width - 80, 30);
+    }
   }
 
   // Draw food
