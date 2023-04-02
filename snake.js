@@ -88,7 +88,8 @@ function startGame() {
 function reset() {
   clearInterval(gameLoop);
   snake = [{ x: 10, y: 10 }];
-  direction = "right";
+  var directions = ["right", "left", "up", "down"];
+  direction = directions[Math.floor(Math.random() * directions.length)];
   food = { x: Math.floor(Math.random() * 25), y: Math.floor(Math.random() * 25) };
   score = 0;
   startGame();
